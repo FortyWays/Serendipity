@@ -2,11 +2,21 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from .throttling import OncePerDayThrottle
-from .models import ScheduledReward
+from .models import ScheduledReward, RewardLog
+from .serializers import RewardLogSerializer
 from django.utils import timezone
 from datetime import timedelta
 
+
+class RewardLogListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = RewardLogSerializer
+
+    def get_queryset(self):
+        return RewardLog.objects.filter(user=self.request.user)
+    
 
 class DailyRewardRequestView(APIView):
     permission_classes = [IsAuthenticated]
